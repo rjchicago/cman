@@ -1,4 +1,4 @@
-# Pac-Man Level Creator
+# Cman Level Creator
 
 ## Creating Levels
 
@@ -6,7 +6,7 @@ Create `.txt` files in the `levels/` directory. Level files must be rectangular 
 
 ### Characters
 
-- `C` - Pac-Man spawn point (required, only one)
+- `C` - Cman spawn point (required, only one)
 - `M` - Ghost spawn points (optional, multiple allowed)
 - `.` - Pellets (dots to collect)
 - `o` - Power pellets (makes ghosts vulnerable)
@@ -43,8 +43,8 @@ Create `.txt` files in the `levels/` directory. Level files must be rectangular 
 ### Running
 
 #### Local
-- `python3 pacman.py` - Interactive level selection
-- `LEVEL=003 python3 pacman.py` - Load specific level
+- `python3 cman.py` - Interactive level selection
+- `LEVEL=003 python3 cman.py` - Load specific level
 
 #### Docker
 - `docker compose build` - Build with Docker
