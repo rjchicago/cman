@@ -1,0 +1,58 @@
+# Pac-Man Level Creator
+
+## Creating Levels
+
+Create `.txt` files in the `levels/` directory. Level files must be rectangular (all rows same width).
+
+### Characters
+
+- `C` - Pac-Man spawn point (required, only one)
+- `M` - Ghost spawn points (optional, multiple allowed)
+- `.` - Pellets (dots to collect)
+- `o` - Power pellets (makes ghosts vulnerable)
+- `─│┌┐└┘├┤┬┴┼` - Walls (Unicode box drawing)
+- ` ` - Empty space (walkable)
+
+### Design Notes
+
+- Ghost spawn areas should have openings for ghosts to exit
+
+### Warping
+
+- Horizontal warping supported - gaps in left/right walls allow wrapping
+- Vertical warping not supported
+
+### Example
+
+``` txt
+┌───────────┐
+│. . . . . o│
+│.┌───┐.┌─┐.│
+│.└───┘.└─┘.│
+│. . . . . .│
+└─┐.┌─ ─┐.┌─┘
+  │.│M M│.│  
+┌─┘.└───┘.└─┐
+│. . .C. . .│
+│.┌───┐.┌─┐.│
+│.└───┘.└─┘.│
+│o . . . . .│
+└───────────┘
+```
+
+### Running
+
+#### Local
+- `python3 pacman.py` - Interactive level selection
+- `LEVEL=003 python3 pacman.py` - Load specific level
+
+#### Docker
+- `docker compose build` - Build with Docker
+- `docker compose run --rm --it cman` - Run interactively
+- `docker compose run --rm --it -e LEVEL=003 cman` - Load specific level
+
+### Controls
+
+- Arrow keys or WASD - Move
+- P - Pause
+- Q - Quit
