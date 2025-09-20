@@ -51,6 +51,22 @@ Create `.txt` files in the `levels/` directory. Level files must be rectangular 
 - `docker compose run --rm --it cman` - Run interactively
 - `docker compose run --rm --it -e LEVEL=003 cman` - Load specific level
 
+#### Alias
+Create a shell alias for easier usage:
+```bash
+cman () {
+	docker run --rm -it -e LEVEL="$LEVEL" rjchicago/cman "$@"
+}
+```
+
+```bash
+# Usage
+cman
+
+# Load a specific level
+LEVEL=003 cman
+```
+
 ### Controls
 
 - Arrow keys or WASD - Move
