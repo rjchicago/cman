@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   cman:
     image: rjchicago/cman:${VERSION:-latest}
@@ -8,6 +6,7 @@ services:
     tty: true
     environment:
       - TERM=xterm-256color
+      - LEVEL=${LEVEL:-}
     volumes:
       - ./app/src:/app/src
       - ./app/levels:/app/levels

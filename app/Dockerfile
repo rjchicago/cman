@@ -1,5 +1,7 @@
 FROM python:3.11-slim
 
+ENV LEVEL=""
+
 WORKDIR /app
 
 COPY src ./src
