@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Pac-Man-ish with external level files (plain text in ./levels).
+# cman with external level files (plain text in ./levels).
 # - Prompts for a level name; loads levels/<name>.txt
 # - Enter with no input -> first available level
 # - Invalid name -> list available levels, re-prompt
@@ -179,7 +179,7 @@ def step_entity_on_grid(LEVEL, x, y, dx, dy, step, W, H):
     return x, y, 0, 0
 
 # ---------------- Entities ----------------
-class Pacman:
+class Cman:
     def __init__(self, start_pos):
         sx, sy = start_pos
         self.x = float(sx); self.y = float(sy)
@@ -213,13 +213,13 @@ class Ghost:
 
 # ---------------- Spawn helpers ----------------
 def find_default_spawns(LEVEL):
-    """Find spawn points marked with C (Pacman) and M (ghosts), replace with spaces"""
+    """Find spawn points marked with C (cman) and M (ghosts), replace with spaces"""
     H = len(LEVEL); W = len(LEVEL[0])
     
     # Convert LEVEL to mutable list of lists
     level_grid = [list(row) for row in LEVEL]
     
-    # Find C marker for Pacman
+    # Find C marker for cman
     pac = None
     for y in range(H):
         for x in range(W):
@@ -283,7 +283,7 @@ def simulate(stdscr, LEVEL, title):
 
     # Spawns
     pac_start, ghost_starts, scatter_targets = find_default_spawns(LEVEL)
-    pac = Pacman(pac_start)
+    pac = Cman(pac_start)
     ghosts = [Ghost(ghost_starts[i], scatter_targets[i]) for i in range(len(ghost_starts))]
 
     pellets, powers = make_pellet_map(LEVEL)
@@ -339,9 +339,9 @@ def simulate(stdscr, LEVEL, title):
             nx, ny = wrap_xy(pac.x + want[0], pac.y + want[1], W, H)
             if not is_wall(LEVEL, int(nx), int(ny), W, H):
                 pac.dx, pac.dy = want
-                game_started = True  # Start game when Pacman first moves
+                game_started = True  # Start game when cman first moves
 
-        # Move Pac
+        # Move cman
         if pac.dx != 0 or pac.dy != 0:
             # Half speed for vertical movement (terminal cells are rectangular)
             speed_x = PAC_SPEED * dt
@@ -428,7 +428,7 @@ def simulate(stdscr, LEVEL, title):
                             exit_target = (int(g.x), max(0, H//2 - 4))
                             ddx, ddy = astar_dir(LEVEL, (int(g.x), int(g.y)), exit_target, forbid, W, H)
                         else:
-                            # Always chase Pac-Man with A* pathfinding
+                            # Always chase cman with A* pathfinding
                             target = (int(pac.x), int(pac.y))
                             ddx, ddy = astar_dir(LEVEL, (int(g.x), int(g.y)), target, forbid, W, H)
                     # If ghost is stuck, force a random direction
@@ -500,7 +500,7 @@ def simulate(stdscr, LEVEL, title):
             try: stdscr.addstr(int(g.y)+1, int(g.x), "M", col)
             except curses.error: pass
 
-        # Pac
+        # cman
         pc = PAC_CHARS.get((pac.dx, pac.dy), PAC_CHAR_IDLE)
         try: stdscr.addstr(int(pac.y)+1, int(pac.x), pc, PAC_COLOR)
         except curses.error: pass
