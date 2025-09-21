@@ -5,10 +5,15 @@ import locale
 import os
 from level_loader import list_level_files, load_level_file, get_initial_level
 from game_engine import simulate
+from landing import show_landing
 
 locale.setlocale(locale.LC_ALL, "")
 
 def main():
+    # Show landing page
+    if not curses.wrapper(show_landing):
+        return  # User quit
+    
     files = list_level_files()
     
     # Check for LEVEL environment variable
