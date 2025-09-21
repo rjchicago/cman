@@ -40,13 +40,25 @@ Create `.txt` files in the `levels/` directory. Level files must be rectangular 
 └───────────┘
 ```
 
+### Controls
+
+- Arrow keys or WASD - Move
+- P - Pause
+- Q - Quit
+
 ### Running
+
+#### Docker
+
+``` bash
+docker run --rm -it rjchicago/cman
+```
 
 #### Local
 - `python3 cman.py` - Interactive level selection
 - `LEVEL=003 python3 cman.py` - Load specific level
 
-#### Docker
+#### Docker Compose
 - `docker compose build` - Build with Docker
 - `docker compose run --rm --it cman` - Run interactively
 - `docker compose run --rm --it -e LEVEL=003 cman` - Load specific level
@@ -66,9 +78,3 @@ cman
 # Load a specific level
 LEVEL=003 cman
 ```
-
-### Controls
-
-- Arrow keys or WASD - Move
-- P - Pause
-- Q - Quit
