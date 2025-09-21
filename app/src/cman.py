@@ -23,6 +23,7 @@ def main():
     else:
         current_level = 0
     
+    game_state = None
     while True:
         if current_level >= len(files):
             print("All levels completed!")
@@ -33,10 +34,19 @@ def main():
         print(f"Loading: {filename}")
         LEVEL = load_level_file(filename)
         
-        result = curses.wrapper(simulate, LEVEL, title)
+        if game_state:
+            result = curses.wrapper(simulate, LEVEL, title, game_state[0], game_state[1])
+        else:
+            result = curses.wrapper(simulate, LEVEL, title)
         
-        if result == "NEXT":
+        if isinstance(result, tuple) and result[0] == "NEXT":
+            game_state = result[1]  # (score, lives)
             current_level += 1
+        elif result == "NEXT":
+            current_level += 1
+        elif result == "RESTART":
+            current_level = 0
+            game_state = None
         else:
             break  # Quit
 

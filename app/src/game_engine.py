@@ -5,8 +5,10 @@ import random
 from config import *
 from entities import Cman, Ghost
 from game_utils import *
+from game_state import load_game_state, save_game_state, clear_game_state
+from high_scores import add_high_score, get_top_scores, is_high_score
 
-def simulate(stdscr, LEVEL, title):
+def simulate(stdscr, LEVEL, title, initial_score=None, initial_lives=None):
     H = len(LEVEL)
     W = len(LEVEL[0])
 
@@ -29,9 +31,13 @@ def simulate(stdscr, LEVEL, title):
     else:
         PAC_COLOR = GHOST_COLOR = FRIGHT_COL = MAZE_COLOR = 0
 
+    # Load state if not provided
+    if initial_score is None or initial_lives is None:
+        initial_score, initial_lives = load_game_state()
+    
     # Spawns
     pac_start, ghost_starts, scatter_targets = find_default_spawns(LEVEL)
-    pac = Cman(pac_start)
+    pac = Cman(pac_start, initial_score, initial_lives)
     ghosts = [Ghost(ghost_starts[i], scatter_targets[i]) for i in range(len(ghost_starts))]
 
     pellets, powers = make_pellet_map(LEVEL)
@@ -70,6 +76,7 @@ def simulate(stdscr, LEVEL, title):
         pac_grid = (int(pac.x), int(pac.y))
         if pac_grid in pellets:
             pellets.remove(pac_grid)
+            pac.score += PELLET_POINTS
         if pac_grid in powers:
             powers.remove(pac_grid)
             pac.power = POWER_TIME
@@ -92,6 +99,7 @@ def simulate(stdscr, LEVEL, title):
 
         # Win condition
         if not pellets and not powers:
+            pac.score += LEVEL_BONUS
             msg = "YOU WIN!"
             running = False
 
@@ -99,8 +107,17 @@ def simulate(stdscr, LEVEL, title):
         render_game(stdscr, LEVEL, pac, ghosts, pellets, powers, title, 
                    PAC_COLOR, GHOST_COLOR, FRIGHT_COL, MAZE_COLOR)
 
-    # Game over screen
-    return show_game_over(stdscr, msg, H, W)
+    # Save state and show game over screen
+    if pac.lives < 0:
+        clear_game_state()
+        initials = None
+        if is_high_score(pac.score):
+            initials = get_initials(stdscr, H, W)
+        add_high_score(pac.score, initials or "???")
+        return show_game_over(stdscr, msg, H, W, None, pac.score)
+    else:
+        save_game_state(pac.score, pac.lives)
+        return show_game_over(stdscr, msg, H, W, (pac.score, pac.lives))
 
 def handle_input(stdscr, pac, paused, last, H, W, LEVEL, game_started):
     try:
@@ -152,6 +169,7 @@ def handle_collisions(pac, ghosts, pac_start, game_started):
         distance = abs(g.x - pac.x) + abs(g.y - pac.y)
         if distance < COLLISION_THRESHOLD:
             if g.frightened > 0:
+                pac.score += GHOST_POINTS
                 g.reset()  # This sets home_timer = HOME_TIME
             else:
                 if pac.shield > 0:
@@ -213,7 +231,7 @@ def render_game(stdscr, LEVEL, pac, ghosts, pellets, powers, title,
 
     # Title/HUD
     try:
-        stdscr.addstr(0, 0, f"Level: {title}  Power:{pac.power:4.1f}  Lives:{max(0,pac.lives)}")
+        stdscr.addstr(0, 0, f"Level: {title}  Score: {pac.score}  Power:{pac.power:4.1f}  Lives:{max(0,pac.lives)}")
     except curses.error:
         pass
 
@@ -265,7 +283,7 @@ def render_game(stdscr, LEVEL, pac, ghosts, pellets, powers, title,
 
     stdscr.refresh()
 
-def show_game_over(stdscr, msg, H, W):
+def show_game_over(stdscr, msg, H, W, state=None, final_score=None):
     stdscr.nodelay(False)
     stdscr.timeout(-1)
     
@@ -274,7 +292,15 @@ def show_game_over(stdscr, msg, H, W):
         msg_x = max(0, (W - len(msg)) // 2)
         try:
             stdscr.addstr(msg_y, msg_x, msg)
-            stdscr.addstr(msg_y + 2, 0, "q to quit, ENTER for next level")
+            if final_score is not None:
+                stdscr.addstr(msg_y + 1, 0, f"Final Score: {final_score}")
+                stdscr.addstr(msg_y + 3, 0, "HIGH SCORES:")
+                for i, entry in enumerate(get_top_scores(5)):
+                    initials = entry.get('initials', '???')
+                    stdscr.addstr(msg_y + 4 + i, 0, f"{i+1}. {initials} {entry['score']} ({entry['date'][:10]})")
+                stdscr.addstr(msg_y + 10, 0, "q to quit, ENTER to restart")
+            else:
+                stdscr.addstr(msg_y + 2, 0, "q to quit, ENTER for next level")
         except curses.error:
             pass
         stdscr.refresh()
@@ -284,7 +310,9 @@ def show_game_over(stdscr, msg, H, W):
             if ch in (ord('q'), ord('Q')):
                 return None
             elif ch in (10, 13):
-                return "NEXT"
+                if state:
+                    return ("NEXT", state)
+                return "RESTART"
     else:
         try:
             stdscr.addstr(H + 2, 0, "Bye! Press any key…")
@@ -293,3 +321,31 @@ def show_game_over(stdscr, msg, H, W):
         stdscr.refresh()
         stdscr.getch()
         return None
+
+def get_initials(stdscr, H, W):
+    """Get player initials for high score."""
+    stdscr.nodelay(False)
+    curses.curs_set(1)
+    initials = ""
+    
+    while len(initials) < 3:
+        stdscr.erase()
+        try:
+            stdscr.addstr(H//2, max(0, (W - 20) // 2), "NEW HIGH SCORE!")
+            stdscr.addstr(H//2 + 2, max(0, (W - 20) // 2), f"Enter initials: {initials}_")
+            stdscr.addstr(H//2 + 4, max(0, (W - 30) // 2), "(Press ENTER when done)")
+        except curses.error:
+            pass
+        stdscr.refresh()
+        
+        ch = stdscr.getch()
+        if ch in (10, 13):  # Enter
+            break
+        elif ch == 8 or ch == 127:  # Backspace
+            if initials:
+                initials = initials[:-1]
+        elif 32 <= ch <= 126:  # Printable characters
+            initials += chr(ch).upper()
+    
+    curses.curs_set(0)
+    return initials.ljust(3)[:3]

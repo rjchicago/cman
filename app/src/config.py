@@ -12,6 +12,11 @@ LIVES_START = 3
 COLLISION_THRESHOLD = 0.9
 VERTICAL_SPEED_MULT = 0.7
 
+# Scoring
+PELLET_POINTS = 1
+GHOST_POINTS = 10
+LEVEL_BONUS = 50
+
 # Display characters
 PAC_CHARS = {(1,0): ">", (-1,0): "<", (0,-1): "^", (0,1): "v"}
 PAC_CHAR_IDLE = "C"

@@ -10,3 +10,7 @@ services:
     volumes:
       - ./app/src:/app/src
       - ./app/levels:/app/levels
+      - cman_data:/data
+
+volumes:
+  cman_data:
