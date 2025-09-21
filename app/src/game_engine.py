@@ -213,7 +213,7 @@ def render_game(stdscr, LEVEL, pac, ghosts, pellets, powers, title,
 
     # Title/HUD
     try:
-        stdscr.addstr(0, 0, f"Level: {title}  (q quits)  Power:{pac.power:4.1f}  Lives:{max(0,pac.lives)}")
+        stdscr.addstr(0, 0, f"Level: {title}  Power:{pac.power:4.1f}  Lives:{max(0,pac.lives)}")
     except curses.error:
         pass
 
