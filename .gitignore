@@ -12,6 +12,12 @@ __pycache__/
 *.swp
 *.swo
 
+# TypeScript/Node.js
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
 # OS
 .DS_Store
 Thumbs.db
