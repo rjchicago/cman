@@ -13,6 +13,7 @@ services:
       - cman_data:/data
 
   cman-web:
+    image: rjchicago/cman-web:${VERSION:-latest}
     build: ./web
     ports:
       - "8080:80"
