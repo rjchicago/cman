@@ -18,6 +18,11 @@ dist/
 build/
 *.tsbuildinfo
 
+# Security/Certificates
+*.pem
+*.key
+*.crt
+
 # OS
 .DS_Store
 Thumbs.db

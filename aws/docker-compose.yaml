@@ -1,0 +1,36 @@
+services:
+  traefik:
+    image: traefik:3.5.2
+    command:
+      - --log.level=DEBUG
+      - --accesslog=false
+      - --accesslog.fields.defaultmode=keep
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --certificatesresolvers.acme.acme.httpchallenge=true
+      - --certificatesresolvers.acme.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.acme.acme.email=you@rjchicago.com
+      - --certificatesresolvers.acme.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+  cman:
+    image: rjchicago/cman-web:latest
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.cman.rule=Host(`cman.rjchicago.com`)
+      - traefik.http.routers.cman.entrypoints=websecure
+      - traefik.http.routers.cman.tls=true
+      - traefik.http.routers.cman.tls.certresolver=acme
+      # internal port your app listens on (80 for nginx:alpine)
+      - traefik.http.services.cman.loadbalancer.server.port=80
+    restart: unless-stopped
