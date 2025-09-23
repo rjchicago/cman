@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>cman (web)</title>
+    <style>
+      html, body { height:100%; margin:0; background:#000; color:#ddd; font:14px/1.4 system-ui, sans-serif; }
+      #wrap { display:flex; align-items:center; justify-content:center; height:100%; gap:16px; }
+      canvas { image-rendering: pixelated; background:#000; }
+      .panel { max-width:320px }
+      .panel a { color:#7cf; text-decoration:none }
+      .panel kbd { background:#222; border:1px solid #444; padding:0 4px; border-radius:3px; }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <canvas id="game" width="800" height="640"></canvas>
+      <div class="panel">
+        <h2>cman (web)</h2>
+        <p>Arrows/WASD to move, <kbd>P</kbd> pause. Add <code>?level=003</code> to URL.</p>
+        <p>Status: <span id="status">Loading…</span></p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
