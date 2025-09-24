@@ -6,11 +6,82 @@
     <title>cman (web)</title>
     <style>
       html, body { height:100%; margin:0; background:#000; color:#ddd; font:14px/1.4 system-ui, sans-serif; }
-      #wrap { display:flex; align-items:center; justify-content:center; height:100%; gap:16px; }
-      canvas { image-rendering: pixelated; background:#000; }
+      #wrap { position:relative; height:100%; }
+      canvas { image-rendering: pixelated; background:#000; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); }
       .panel { max-width:320px }
       .panel a { color:#7cf; text-decoration:none }
       .panel kbd { background:#222; border:1px solid #444; padding:0 4px; border-radius:3px; }
+      
+      #touch-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        z-index: 1000;
+      }
+      
+      #dpad {
+        position: relative;
+        width: 154px;
+        height: 154px;
+        background: rgba(68, 68, 68, 0.8);
+        border-radius: 50%;
+        border: 2px solid #666;
+      }
+      
+      .dpad-btn {
+        position: absolute;
+        width: 48px;
+        height: 48px;
+        background: rgba(85, 85, 85, 0.9);
+        border: 1px solid #999;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #ddd;
+        user-select: none;
+        touch-action: manipulation;
+      }
+      
+      .dpad-btn:active, .dpad-btn.active {
+        background: rgba(119, 204, 255, 0.8);
+        color: #000;
+      }
+      
+      .dpad-btn[data-dir="up"] { top: 5px; left: 53px; }
+      .dpad-btn[data-dir="down"] { bottom: 5px; left: 53px; }
+      .dpad-btn[data-dir="left"] { left: 5px; top: 53px; }
+      .dpad-btn[data-dir="right"] { right: 5px; top: 53px; }
+      
+      #pause-btn {
+        width: 60px;
+        height: 60px;
+        background: rgba(85, 85, 85, 0.9);
+        border: 2px solid #666;
+        border-radius: 50%;
+        color: #ddd;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+      }
+      
+      #pause-btn:active, #pause-btn.active {
+        background: rgba(119, 204, 255, 0.8);
+        color: #000;
+      }
+      
+      @media (max-width: 768px) {
+        #wrap { flex-direction: column; padding: 10px; }
+        canvas { max-width: 100%; height: auto; }
+        .panel { display: none; }
+      }
     </style>
   </head>
   <body>

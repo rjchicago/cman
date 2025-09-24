@@ -12,6 +12,7 @@ export class Game {
   currentLevel = '000'; waitingForNext = false;
   playerSpawn: {x: number, y: number};
   clearInput?: () => void;
+  input?: any;
 
   constructor(grid:Grid, spawn:{x:number,y:number}, ghosts:{x:number,y:number}[], canvas:HTMLCanvasElement, statusEl:HTMLElement, level = '000'){
     this.grid = grid; this.player = new Actor(spawn.x, spawn.y);
@@ -34,7 +35,11 @@ export class Game {
     if (this.waitingForNext) return; // ignore movement when waiting for next level
     this.inputDir = d; 
   }
-  togglePause(){ this.paused = !this.paused; }
+  togglePause(){ 
+    if (this.waitingForNext) return; // don't allow pause when waiting for next level
+    this.paused = !this.paused;
+    this.input?.updatePauseButton(this.paused, this.waitingForNext);
+  }
   
   handleEnter() {
     if (this.waitingForNext) {
@@ -66,6 +71,7 @@ export class Game {
         this.inputDir = 'none';
         this.clearInput?.(); // clear input system
         this.r.resizeToGrid(grid);
+        this.input?.updatePauseButton(this.paused, this.waitingForNext);
         
         // Count pellets and powers
         this.pellets = 0; this.powers = 0;
@@ -273,6 +279,7 @@ export class Game {
       this.score += config.levelBonus;
       this.won = true;
       this.waitingForNext = true;
+      this.input?.updatePauseButton(this.paused, this.waitingForNext);
       console.log(`Level ${this.currentLevel} complete!`);
     }
   }
